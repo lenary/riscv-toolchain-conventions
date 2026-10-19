@@ -237,11 +237,6 @@ between compressed (16-bit) instructions and their 32-bit equivalent. e.g.
 
 === Issues for consideration
 
-- The current GNU objdump behaviour will not provide useful results for cases
-where non-standard extensions are implemented which reuse some of the standard
-extension's encoding space. Making RISC-V ELF files self-describing (as
-discussed https://github.com/riscv-non-isa/riscv-elf-psabi-doc/pull/47[here])
-would avoid this problem.
 - Would it be useful to have separate flags that control the printing of
 pseudoinstructions and whether compressed instructions are printed directly or
 not?
