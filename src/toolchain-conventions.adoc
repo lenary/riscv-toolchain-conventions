@@ -284,14 +284,8 @@ The library sequences are provided in the emulation library and have the
 following names:
 
 - `+__riscv_save_<N>+`
-- `+__riscv_save_cfiss_<N>+`
-- `+__riscv_save_swss_<N>+`
 - `+__riscv_restore_<N>+`
-- `+__riscv_restore_cfiss_<N>+`
-- `+__riscv_restore_swss_<N>+`
-- `+__riscv_restore_tailcall_<N>+` (LLVM/compiler-rt only)
-- `+__riscv_restore_tailcall_cfiss_<N>+` (LLVM/compiler-rt only)
-- `+__riscv_restore_tailcall_swss_<N>+` (LLVM/compiler-rt only)
+- `+__riscv_restore_tailcall_<N>+`
 
 `<N>` is a value between 0 and 12 and corresponds to the number of registers
 between `s0` and `s11` that are saved/restored. The return address register `ra`
@@ -316,17 +310,23 @@ of the tail-called function provided in register `t1`.
 NOTE: The `+__riscv_restore_tailcall_*+` versions are not widely available in
 toolchains as of late 2026.
 
-The sequences with names that include `+_cfiss_+` must contain the `+sspush+` or
-`+sspopchk+` instructions as used by the Zicfiss extension for hardware shadow
-stack checking. These must be provided in objects that are correctly marked
-(following the ABI) to denote their compatibility with the `Zicfiss` shadow
-stack mechanism.
+These sequences must include the respective hardware or software shadow stack
+instructions for storing or checking the return address value, as this is not
+expected to be done by their caller:
 
-The sequences with names that include `+_swss_+` must save or restore the value
-of `ra` using the software shadow stack pointed to by `x3`. The value of `ra`
-may also need to be saved to the conventional stack to follow the frame pointer
-convention. These must be provided in objects that are correctly marked
-(following the ABI) to denote their use of `gp` for the software shadow stack.
+- In libraries compatible with hardware shadow stacks, the sequences must
+  contain the `+sspush+` or `+sspopchk+` instructions as used by the Zicfiss
+  extension. These must be provided in objects that are correctly marked
+  (following the ABI) to denote their compatibility with the `Zicfiss` shadow
+  stack mechanism.
+
+- In libraries compatible with the software shadow stack convention, the
+  sequences must save or restore the value of `ra` using the software shadow
+  stack pointed to by `x3`. The value of `ra` may also need to be saved to the
+  conventional stack to follow the frame pointer convention. These must be
+  provided in objects that are correctly marked (following the ABI) to denote
+  their use of `gp` for the software shadow stack, and to denote their
+  compatibility with the software shadow stack convention.
 
 === Save Restore Routine Stack Frame Layouts
 
